@@ -1,8 +1,8 @@
 import { View,FlatList,ActivityIndicator,Text} from "react-native"
 import { primary, primaryvariant } from "../../Styles/ColorStyles"
-import { SprintItem } from "../../Components/Components";
+import { CustomSnackBar, SprintItem } from "../../Components/Components";
 import { useEffect, useState } from "react";
-import { repo, SprintRepository } from "../../../Data/Repository/Repository";
+import { repo } from "../../../Data/Repository/Repository";
 import { SprintTimerStyles } from "../../Styles/Component_Styles";
 
 
@@ -10,6 +10,8 @@ import { SprintTimerStyles } from "../../Styles/Component_Styles";
 export default SprintsScreen = () => {
     const [data,setData] = useState([])
     const [isloading,setisloading] = useState(true)
+    const [isSnackBarVisible, setIsSnackBarVisible] = useState(false);
+    const [isFailSnackBarVisible, setIsFailSnackBarVisible] = useState(false);
     const getSprints = async () => {
         setisloading(true)
         const results = await repo.getAllSprints()
@@ -19,11 +21,12 @@ export default SprintsScreen = () => {
 
     useEffect(() => {
         getSprints()
-    })
+    },[])
 
     return(
         data.length > 0 ?(
-            <FlatList
+            <View style = {{flex : 1}}>
+                <FlatList
               data={data}
               keyExtractor={(item) => `${item.title} ${item.time}`}
               renderItem={({ item}) => (
@@ -31,8 +34,14 @@ export default SprintsScreen = () => {
                     title={item.title}
                     time={item.time}
                     onDelete={async() => {
-                        await repo.deleteSprint(item.id)
-                        getSprints()
+                        try {
+                            await repo.deleteSprint(item.id)
+                            setIsSnackBarVisible(true)
+                            getSprints()
+                        } catch (error) {
+                            setIsFailSnackBarVisible(true)
+                        }
+                        
                     }}
                />
                )}
@@ -41,6 +50,10 @@ export default SprintsScreen = () => {
                 padding: 16,
               }}
            />
+           {isSnackBarVisible ? <CustomSnackBar  text= "Sprint Deleted!!" onDismiss={() => {setIsSnackBarVisible(false)}}/> : <View></View>}
+           {isFailSnackBarVisible ? <CustomSnackBar isSuccess = {false} text= "Something Went Wronng!!" onDismiss={() => {setIsFailSnackBarVisible(false)}}/> : <View></View>}
+            </View>
+            
         ) : (
         //draw circular indicator if loading else show no sprints saved
         isloading ? <View style = {{flex : 1,justifyContent : "center",alignItems : "center"}}>
@@ -49,6 +62,7 @@ export default SprintsScreen = () => {
         <View style = {{flex : 1,justifyContent : "center",alignItems : "center",backgroundColor : primaryvariant}}>
             <Text style ={SprintTimerStyles.displayLarge}>No sprints Saved!!</Text>
         </View>)
+        
         
     )
 }

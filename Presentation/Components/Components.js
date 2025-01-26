@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, View,Modal,StyleSheet,Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { onprimary, onsecondary, ontertiary, secondary} from '../Styles/ColorStyles';
-import { TextInput } from 'react-native-paper';
+import { TextInput,Snackbar } from 'react-native-paper';
 import { useState } from 'react';
 import { ControlButtonstyles, FloatingButtonstyles, PopupDialogueStyles, SprintItemstyles, TopBarStyles } from '../Styles/Component_Styles';
 
@@ -78,5 +78,22 @@ export function PopupDialog({ visible, onClose, onSubmit }) {
       </View>
     );
   };
+
+  export const CustomSnackBar = ({onDismiss,isSuccess = true,text}) => {
+    
+    return (
+      <View style={{width : "100%",position : "absolute",bottom : 20}}>
+        <Snackbar
+          visible={true}
+          onDismiss={onDismiss}
+          duration={3000} // Duration in milliseconds (3 seconds)
+          action={{
+          }}
+        >
+         {isSuccess ? text : `Something went wrong!!`}
+        </Snackbar>
+      </View>
+    );
+  }
   
   

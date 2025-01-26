@@ -1,5 +1,5 @@
 import { Text, View } from "react-native"
-import { PopupDialog,ControlButton, FloatingButton, SprintItem} from "../../Components/Components"
+import { PopupDialog,ControlButton, FloatingButton, SprintItem, CustomSnackBar} from "../../Components/Components"
 import {primaryvariant} from "../../Styles/ColorStyles"
 import { useEffect, useState } from "react"
 import { SprintTimerStyles } from "../../Styles/Component_Styles"
@@ -12,6 +12,7 @@ export default HomeScreen = () => {
     const [time,settime] = useState("00:00:00")
     const [ispaused,setispaused] = useState(true)
     const [isvisibledialogue,setisvisibledialogue] = useState(false)
+    const [isSnackBarVisible, setIsSnackBarVisible] = useState(false);
     const playpause = () => {
         setispaused(!ispaused)
     }
@@ -90,7 +91,10 @@ export default HomeScreen = () => {
             <PopupDialog visible={isvisibledialogue} onClose={() => {setisvisibledialogue(false)}} onSubmit={(newtitle) => {
                 saveSprint(newtitle,time)
                 setisvisibledialogue(false)
+                setIsSnackBarVisible(true)
             }}/>
+
+            {isSnackBarVisible ? <CustomSnackBar text= "Sprint Saved" onDismiss={() => {setIsSnackBarVisible(false)}}/> : <View></View>}
         </View>
     )
 
